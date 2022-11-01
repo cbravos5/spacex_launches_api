@@ -1,5 +1,6 @@
 import { LaunchDTO } from "@/interfaces/LaunchDTO";
-import { launchesMapper, launchMapper } from "@/mappers/LaunchMapper";
+import { PagedLaunchesDTO } from "@/interfaces/PagedLaunchesDTO";
+import { launchMapper, pagedLaunchesMapper } from "@/mappers/LaunchMapper";
 import * as LaunchesServices from "@/services/launches";
 import { Request, Response } from "express";
 import { BaseController } from "./BaseController";
@@ -11,10 +12,9 @@ class LaunchesController extends BaseController {
   public getNext = async (_: Request, res: Response) => {
     try {
       const response = await LaunchesServices.getNextLaunch();
-
       if(response.status !== 200) throw new Error("Error while contacting SpaceX API");
 
-      const launch = launchMapper(response.data);
+      const launch = launchMapper(response.data.docs[0]);
 
       return this.ok<LaunchDTO>(res, launch);
     } catch (error) {
@@ -25,15 +25,19 @@ class LaunchesController extends BaseController {
   /**
    * getUpcoming
    */
-  public getUpcoming = async (_: Request, res: Response) => {
+  public getUpcoming = async (req: Request, res: Response) => {
     try {
-      const response = await LaunchesServices.getUpcomingLaunches();
+      const page = Number(req.params.page);
+
+      if(!page) throw new Error("Page is required")
+
+      const response = await LaunchesServices.getUpcomingLaunches(page);
 
       if(response.status !== 200) throw new Error("Error while contacting SpaceX API");
 
-      const launches = launchesMapper(response.data);
+      const pagedLaunches = pagedLaunchesMapper(response.data);
 
-      return this.ok<LaunchDTO[]>(res, launches);
+      return this.ok<PagedLaunchesDTO>(res, pagedLaunches);
     } catch (error) {
       return this.fail(res, error)
     }
@@ -48,7 +52,7 @@ class LaunchesController extends BaseController {
 
       if(response.status !== 200) throw new Error("Error while contacting SpaceX API");
 
-      const launch = launchMapper(response.data);
+      const launch = launchMapper(response.data.docs[0]);
 
       return this.ok<LaunchDTO>(res, launch);
     } catch (error) {
@@ -59,15 +63,19 @@ class LaunchesController extends BaseController {
   /**
    * getPast
    */
-  public getPast = async (_: Request, res: Response) => {
+  public getPast = async (req: Request, res: Response) => {
     try {
-      const response = await LaunchesServices.getPastLaunches();
+      const page = Number(req.params.page);
+
+      if(!page) throw new Error("Page is required")
+
+      const response = await LaunchesServices.getPastLaunches(page);
 
       if(response.status !== 200) throw new Error("Error while contacting SpaceX API");
 
-      const launches = launchesMapper(response.data);
+      const pagedLaunches = pagedLaunchesMapper(response.data);
 
-      return this.ok<LaunchDTO[]>(res, launches);
+      return this.ok<PagedLaunchesDTO>(res, pagedLaunches);
     } catch (error) {
       return this.fail(res, error)
     }

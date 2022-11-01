@@ -57,11 +57,11 @@ export interface ILaunch {
   tdb: boolean;
   net: boolean;
   window: number;
-  rocket: string;
+  rocket: { name: string; };
   success: boolean;
   failures: Failure[];
   details: string;
-  launchpad: string;
+  launchpad: { full_name: string };
   auto_update: boolean;
   flight_number: number;
   name: string;

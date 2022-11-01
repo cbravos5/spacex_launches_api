@@ -3,8 +3,10 @@ export interface LaunchDTO {
       youtubeId: string;
       article: string;
       wikipedia: string;
+      redditCampaign: string;
   },
   rocket: string;
+  launchpad: string;
   success: boolean;
   details: string;
   flightNumber: number;
